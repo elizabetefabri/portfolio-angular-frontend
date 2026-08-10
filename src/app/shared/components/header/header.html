@@ -1,15 +1,93 @@
 <header class="header">
   <div class="container">
-    <div class="topRow">
-      <div class="header__left">
-        <h1 class="header__title">
-          {{ breadcrumbService.pageTitle() || 'Titulo' }}
-        </h1>
-      </div>
-    </div>
+    @if (showLogo()) {
+      <a [routerLink]="['/']" class="logoArea" (click)="closeAll()">
+        <img
+          src="/images/favicon-feliz.png"
+          alt="Logo Elizabete Fabri"
+          width="40"
+          height="40"
+          class="logoImage"
+        />
+        <span class="brand">Elizabete Fabri</span>
+      </a>
+    }
 
-    <div class="header__right">
-      <!-- HeaderHelpBadge, HeaderNotificationBadge, HeaderAvatarUser -->
-    </div>
+    <button
+      type="button"
+      class="menuButton"
+      (click)="toggleMenu()"
+      [attr.aria-label]="isMenuOpen() ? 'Fechar menu' : 'Abrir menu'"
+      [attr.aria-expanded]="isMenuOpen()"
+    >
+      <img
+        src="/images/icons/menu.png"
+        alt=""
+        width="32"
+        height="32"
+        class="menuIcon"
+      />
+    </button>
+
+    <nav
+      class="nav"
+      [class.open]="isMenuOpen()"
+      [class.closed]="!isMenuOpen()"
+      aria-label="Navegação principal"
+    >
+      <a
+        [routerLink]="['/']"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="closeMenu()"
+      >
+        Início
+      </a>
+
+      <div class="dropdown">
+        <button
+          type="button"
+          class="dropdownButton"
+          (click)="toggleProjects()"
+          [attr.aria-haspopup]="true"
+          [attr.aria-expanded]="isProjectsOpen()"
+          [class.active]="isProjectsActive()"
+        >
+          Projetos
+          <span class="arrowIcon" [class.rotated]="isProjectsOpen()" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </span>
+        </button>
+
+        @if (isProjectsOpen()) {
+          <div class="dropdownMenu">
+            <a
+              [routerLink]="['/projects/portfolio-personal']"
+              routerLinkActive="active"
+              (click)="closeAll()"
+            >
+              Portfólio Pessoal
+            </a>
+            <a
+              [routerLink]="['/projects/portfolio-professional']"
+              routerLinkActive="active"
+              (click)="closeAll()"
+            >
+              Portfólio Profissional
+            </a>
+          </div>
+        }
+      </div>
+
+      <a
+        [routerLink]="['/contact']"
+        routerLinkActive="active"
+        (click)="closeMenu()"
+      >
+        Contato
+      </a>
+    </nav>
   </div>
 </header>

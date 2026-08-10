@@ -1,0 +1,35 @@
+.hero {
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+  max-width: 50rem;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-amarelo);
+  margin-bottom: 1rem;
+  letter-spacing: 0.05rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--color-gray-90);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+@media (max-width: 48rem) {
+  .hero {
+    padding: 2rem 1rem 1.5rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+}

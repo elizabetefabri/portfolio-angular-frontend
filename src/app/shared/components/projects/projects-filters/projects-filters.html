@@ -1,0 +1,15 @@
+<nav class="nav" aria-label="Filtros de projetos">
+  <div class="chips">
+    @for (item of items; track item) {
+      <button
+        type="button"
+        class="chip"
+        [class.active]="value() === item"
+        (click)="select(item)"
+        [attr.aria-pressed]="value() === item"
+      >
+        {{ item }}
+      </button>
+    }
+  </div>
+</nav>

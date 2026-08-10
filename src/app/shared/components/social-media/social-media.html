@@ -1,0 +1,28 @@
+<section id="contato" class="section">
+  <h2 class="title">{{ contatoTitle() }}</h2>
+
+  <div class="container">
+    <div class="containerSobreMediaDark">
+      <ul>
+        @for (item of links(); track item.title) {
+          <li>
+            <a
+              [href]="item.link"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="item.title"
+            >
+              <img
+                [src]="item.image"
+                [alt]="item.alt"
+                [title]="item.title"
+                width="30"
+                height="30"
+              />
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</section>

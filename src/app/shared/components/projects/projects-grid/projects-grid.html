@@ -1,0 +1,11 @@
+@if (projects().length === 0) {
+  <div class="empty">
+    <p>Nenhum projeto encontrado nesta categoria.</p>
+  </div>
+} @else {
+  <div class="grid">
+    @for (project of projects(); track project.slug) {
+      <app-project-card [project]="project" />
+    }
+  </div>
+}

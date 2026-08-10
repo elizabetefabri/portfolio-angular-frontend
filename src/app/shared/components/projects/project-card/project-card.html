@@ -1,0 +1,55 @@
+<article class="card">
+  <div class="imageWrapper">
+    <img
+      [src]="project().image.src"
+      [alt]="project().image.alt"
+      width="400"
+      height="250"
+      class="image"
+    />
+  </div>
+
+  <div class="content">
+    <h3 class="title">{{ project().title }}</h3>
+    <p class="description">{{ project().description }}</p>
+
+    <div class="techs">
+      @for (tech of project().techs.slice(0, 4); track tech) {
+        <app-tech-badge [tech]="tech" />
+      }
+    </div>
+
+    <div class="actions">
+      <a
+        [routerLink]="['/projects', project().slug]"
+        class="btnPrimary"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Ver projeto
+      </a>
+
+      <a
+        [href]="project().repoUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btnIcon"
+        aria-label="Ver código no GitHub"
+      >
+        <img src="/images/icons/github.png" alt="GitHub" class="icon" />
+      </a>
+
+      @if (project().demoUrl) {
+        <a
+          [href]="project().demoUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btnIcon"
+          aria-label="Ver demo"
+        >
+          <img src="/images/icons/link.png" alt="Demo" class="icon" />
+        </a>
+      }
+    </div>
+  </div>
+</article>

@@ -1,8 +1,19 @@
+<app-divider />
+
 <footer class="footer">
-  <div class="container">
-    <div class="content">
-      <p>&copy; 2026 DevTech. Todos os direitos reservados.</p>
-      <p class="dev">Desenvolvido com ❤️ Elizabete Fabri</p>
-    </div>
-  </div>
+  <p class="copyright">
+    {{ footerCopyright }}
+    <a
+      href="https://elizabetesousafabri.com.br"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Visite o portfólio de Elizabete de Sousa Fabri"
+    >
+      <em>{{ footerTextoLink }}</em>
+    </a>
+    . <br />
+    {{ footerFrase }}
+  </p>
 </footer>
+
+<app-divider />

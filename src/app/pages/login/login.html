@@ -1,0 +1,57 @@
+<div class="loginSection">
+  <div class="container">
+    <h1 class="title">Bem-vinda 👋👋👋</h1>
+    <p class="subtitle">
+      Acesse sua conta para gerenciar projetos e certificados.
+    </p>
+
+    <form class="form" (submit)="handleSubmit($event)">
+      <label class="textLabel" for="email">Insira seu E-mail</label>
+      <input
+        id="email"
+        type="email"
+        required
+        [(ngModel)]="email"
+        name="email"
+        class="inputField"
+      />
+
+      <div class="passwordWrapper">
+        <label class="textLabel" for="password">Insira sua Senha</label>
+        <input
+          id="password"
+          [type]="showPassword() ? 'text' : 'password'"
+          required
+          [(ngModel)]="password"
+          name="password"
+          class="inputField passwordInput"
+        />
+        <button
+          type="button"
+          (click)="togglePassword()"
+          class="eyeButton"
+          [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+        >
+          @if (showPassword()) {
+            <span aria-hidden="true">🙈</span>
+          } @else {
+            <span aria-hidden="true">👁</span>
+          }
+        </button>
+      </div>
+
+      <button type="submit">Entrar</button>
+    </form>
+
+    @if (message()) {
+      <p class="message">{{ message() }}</p>
+    }
+
+    <div class="btnVoltarHome">
+      <a [routerLink]="['/']" class="voltarButton">
+        <span class="voltarIcon" aria-hidden="true">←</span>
+        <span>Voltar para </span>
+      </a>
+    </div>
+  </div>
+</div>

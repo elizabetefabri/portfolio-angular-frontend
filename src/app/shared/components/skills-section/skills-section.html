@@ -1,0 +1,16 @@
+<section class="skillsSection">
+  <ul class="list">
+    @for (skill of skills(); track skill.alt + skill.link) {
+      <li class="item">
+        <a
+          [href]="skill.link"
+          target="_blank"
+          rel="noopener noreferrer"
+          [attr.aria-label]="skill.alt"
+        >
+          <img [src]="skill.img" [alt]="skill.alt" class="img" />
+        </a>
+      </li>
+    }
+  </ul>
+</section>

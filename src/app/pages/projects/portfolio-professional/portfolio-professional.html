@@ -1,0 +1,10 @@
+<app-projects-hero
+  title="Portfólio Profissional"
+  subtitle="Projetos desenvolvidos em ambientes corporativos e soluções para clientes"
+/>
+
+<app-projects-filters [value]="filter()" (valueChange)="filter.set($event)" />
+
+<app-projects-grid [projects]="filteredProjects()" />
+
+<app-projects-cta />

@@ -1,0 +1,185 @@
+.loginSection {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #91a9f3 0%, #fbb6b9 100%);
+  padding: 1rem;
+  font-family: var(--font-oswald);
+}
+
+.container {
+  width: 100%;
+  max-width: 850px;
+  background-color: var(--background);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 7rem;
+  border-radius: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  @media (max-width: 48rem) {
+    padding: 2rem 1.5rem;
+  }
+}
+
+.title {
+  font-size: 2.5rem;
+  color: var(--color-amarelo);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.form {
+  width: 100%;
+}
+
+.textLabel {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-gray-90);
+  text-align: left;
+  margin-bottom: 0.25rem;
+}
+
+.inputField {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  outline: none;
+  border: 1px solid var(--color-gray-90);
+  color: var(--text);
+  background-color: rgba(255, 255, 255, 0.05);
+  font-size: 1rem;
+
+  &::placeholder {
+    color: var(--color-gray-70);
+  }
+}
+
+.passwordWrapper {
+  position: relative;
+  margin-bottom: 0.3rem;
+}
+
+.passwordInput {
+  padding-right: 3rem;
+}
+
+.eyeButton {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  height: 2.5rem;
+  width: 2.5rem;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-gray-70);
+  transition: color 0.3s;
+  margin-top: 0.5rem;
+
+  &:hover {
+    color: var(--color-rose);
+  }
+}
+
+.form button[type='submit'] {
+  width: 100%;
+  display: flex;
+  text-align: center;
+  gap: 0.5rem;
+  background-color: rgba(255, 182, 193, 0.15);
+  color: var(--color-rose);
+  font-size: 1.1rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-rose);
+  justify-content: center;
+
+  &:hover {
+    background-color: rgba(255, 192, 203, 0.25);
+    color: var(--color-rose);
+    transform: translateX(-3px);
+    box-shadow: 0 5px 15px rgba(255, 136, 153, 0.4);
+  }
+}
+
+.message {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--background-text);
+  padding: 0.75rem;
+  background-color: var(--foreground);
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+.btnVoltarHome {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 1.5rem;
+}
+
+.voltarButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(255, 182, 193, 0.15);
+  color: var(--color-rose);
+  font-size: 1rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-rose);
+  text-decoration: none;
+
+  &:hover {
+    background-color: rgba(255, 192, 203, 0.25);
+    color: var(--color-rose);
+    transform: translateX(-3px);
+  }
+}
+
+.voltarIcon {
+  color: var(--color-rose);
+  transition: transform 0.3s ease;
+}
+
+.voltarButton:hover .voltarIcon {
+  transform: translateX(-3px);
+}
+
+@media (max-width: 48rem) {
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .container {
+    padding: 2rem 1.25rem;
+  }
+}

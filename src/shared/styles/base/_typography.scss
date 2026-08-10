@@ -5,22 +5,14 @@
 // Google Fonts Import
 // ============================================================================
 
-// @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap');
 
 // ============================================================================
 // Base Typography
 // ============================================================================
 
-body {
-  font-family: vars.$font-family-base;
-  font-size: vars.$font-size-base;
-  font-weight: vars.$font-weight-normal;
-  line-height: vars.$line-height-base;
-  color: vars.$color-gray-900;
-}
-
 h1, h2, h3, h4, h5, h6 {
+  color: var(--text);
   font-weight: vars.$font-weight-bold;
   line-height: vars.$line-height-lg;
   margin-top: 0;
@@ -76,6 +68,7 @@ h6 {
 }
 
 p {
+  color: var(--text);
   margin-bottom: vars.$spacing-md;
 
   &:last-child {
@@ -84,12 +77,12 @@ p {
 }
 
 a {
-  color: vars.$color-primary;
+  color: var(--color-rose);
   text-decoration: none;
   transition: vars.$transition-base;
 
   &:hover {
-    color: color.adjust(vars.$color-primary, $lightness: -10%);
+    color: var(--color-rose-hover);
   }
 }
 
@@ -107,13 +100,14 @@ small {
 
 code {
   font-family: 'Courier New', monospace;
-  background-color: vars.$color-gray-100;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-green-50);
   padding: vars.$spacing-xs vars.$spacing-sm;
   border-radius: vars.$border-radius-sm;
 }
 
 pre {
-  background-color: vars.$color-gray-100;
+  background-color: rgba(255, 255, 255, 0.08);
   padding: vars.$spacing-md;
   border-radius: vars.$border-radius-md;
   overflow-x: auto;

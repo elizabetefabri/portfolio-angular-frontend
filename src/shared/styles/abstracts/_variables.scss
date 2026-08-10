@@ -26,48 +26,27 @@ $breakpoints: (
 // CSS Custom Properties (Design System)
 // ============================================================================
 
+// Tokens herdados do template original (mantidos para compatibilidade de
+// componentes legados, mas o tema ativo do portfólio usa os tokens Next abaixo).
 :root {
   /* 📐 Layout */
   --sidebar-width-expanded: 15rem;
   --sidebar-width-collapsed: 4rem;
-  --header-height: 4rem;
+  --header-height: 5rem;
+  --footer-height: 7rem;
   --icon-size: 1.25rem;
   --text-xs: 0.75rem;
   --radius-md: 0.75rem;
 
-  /* 🎨 Nova base */
-  --color-bg: #f1f1f1;
-  --color-surface: #fbfaf8;
-  --color-border-subtle: #e2ded9;
-  --color-sidebar-bg-dark: #201f25;
-  --color-header-bg: #f3f1ee;
-  --color-footer-bg: #edeae6;
-
-  /* ✍️ Tipografia */
-  --color-text-primary: #4d4d47;
-  --color-text-secondary: #6b6a64;
-  --color-text-muted: #8a887f;
-  --color-text-on-dark: #ffffff;
-
-  /* 🌸 Ações */
-  --color-primary: #e59a9a;
-  --color-primary-hover: #d88787;
-  --color-primary-border: #d4a39a;
-  --color-primary-soft: #f3c6c6;
-  --color-accent: #f1c27d;
-
-  /* 📌 Ícones */
-  --color-icon-default: #6b6a64;
-  --color-icon-active: #e59a9a;
-  --color-icon-muted: #a5a39a;
-
-  /* 🚦 Status */
-  --color-status-success: #0f7a55;
-  --color-status-info: #355f8c;
-  --color-status-warning: #ffb84d;
-  --color-status-danger: #c23a3a;
-  --color-status-neutral: #555b6e;
-
+  // Tokens do portfólio Next.js — Tema escuro
+  --font-oswald: 'Oswald', sans-serif;
+  --background: rgb(32, 31, 37);
+  --background-footer: #1a1a1f;
+  --background-icon-footer: rgba(170, 170, 170, 0.062);
+  --background-icon-footer-hover: rgba(170, 170, 170, 0.12);
+  --background-text: #d9d9d9;
+  --color-gray-70: #777777;
+  --color-gray-90: #999999;
   --text: #fefefe;
   --black: #000100;
   --foreground: #0e0e11;
@@ -80,6 +59,13 @@ $breakpoints: (
   --color-azul: #1da1f2;
   --color-green-10: #ccffeb;
   --color-green-50: #00ff88;
+
+  /* 🌸 Ações (fallbacks legados) */
+  --color-primary: #e59a9a;
+  --color-primary-hover: #d88787;
+  --color-primary-border: #d4a39a;
+  --color-primary-soft: #f3c6c6;
+  --color-accent: #f1c27d;
 
   /* Sidebar width used by the main layout (updated at runtime) */
   --sidebar-current-width: var(--sidebar-width-collapsed);
@@ -117,7 +103,7 @@ $color-white: #ffffff;
 // Typography
 // ============================================================================
 
-$font-family-base: "Oswald", sans-serif;
+$font-family-base: 'Oswald', sans-serif;
 $font-size-base: 1rem;
 $font-size-lg: 1.25rem;
 $font-size-sm: 0.875rem;

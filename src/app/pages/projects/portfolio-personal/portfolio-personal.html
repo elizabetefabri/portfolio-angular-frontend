@@ -1,0 +1,10 @@
+<app-projects-hero
+  title="Portfólio Pessoal"
+  subtitle="Projetos desenvolvidos para aprendizado e experimentação de novas tecnologias"
+/>
+
+<app-projects-filters [value]="filter()" (valueChange)="filter.set($event)" />
+
+<app-projects-grid [projects]="filteredProjects()" />
+
+<app-projects-cta />

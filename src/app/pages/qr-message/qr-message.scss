@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+.container {
+  min-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--color-green-50);
+  padding: 2rem;
+}
+
+.card {
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 1rem;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.1);
+  animation: fadeIn 1.2s ease-in-out;
+}
+
+.title {
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--color-green-50);
+  text-shadow: 0 0 15px rgba(0, 255, 136, 0.8);
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+  position: relative;
+}
+
+.messageSection {
+  overflow: hidden;
+}
+
+.message {
+  font-size: 1.6rem;
+  line-height: 1.8;
+  color: var(--color-green-10);
+  text-shadow: 0 0 15px rgba(0, 255, 136, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid var(--color-green-50);
+  width: 0;
+  margin: 0 auto;
+  animation:
+    typing 8s steps(80, end) forwards,
+    blink 0.7s step-end infinite;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 2rem 1.5rem;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .message {
+    font-size: 1.2rem;
+  }
+}
