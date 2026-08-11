@@ -28,7 +28,7 @@
     linear-gradient(
         90deg,
         var(--color-amarelo) 0%,
-        var(--color-rosa) 30.21%,
+        var(--color-rose-hover) 30.21%,
         var(--color-roxo) 66.67%,
         var(--color-azul) 100%
       )
@@ -85,7 +85,7 @@
       bottom: -0.3rem;
       width: 0%;
       height: 0.125rem;
-      background-color: var(--color-rosa);
+      background-color: var(--color-rose-hover);
       transition: width 0.3s ease-in-out;
     }
 
@@ -99,12 +99,12 @@
     }
 
     &.active {
-      color: var(--color-rosa);
+      color: var(--color-rose-hover);
     }
 
     &.active::after {
       width: 100%;
-      background-color: var(--color-rosa);
+      background-color: var(--color-rose-hover);
     }
   }
 }
@@ -151,7 +151,7 @@
   }
 
   &.active {
-    color: var(--color-rosa);
+    color: var(--color-rose-hover);
   }
 }
 
@@ -287,7 +287,7 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
     &.active {
-      color: var(--color-rosa);
+      color: var(--color-rose-hover);
     }
   }
 
