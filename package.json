@@ -6,6 +6,7 @@
     "start": "ng serve --port 6001",
     "start:dev": "ng serve --port 6001",
     "build": "ng build",
+    "deploy:ftp": "bash scripts/deploy-ftp.sh",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs"

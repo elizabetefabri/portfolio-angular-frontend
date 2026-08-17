@@ -4,7 +4,7 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadComponent: () => import('./pages/home/home').then((m) => m.Home),
+    redirectTo: 'projects/portfolio-personal',
   },
   {
     path: 'dashboard',
@@ -13,7 +13,9 @@ export const routes: Routes = [
   {
     path: 'projects/portfolio-personal',
     loadComponent: () =>
-      import('./pages/projects/portfolio-personal/portfolio-personal').then((m) => m.PortfolioPersonal),
+      import('./pages/projects/portfolio-personal/portfolio-personal').then(
+        (m) => m.PortfolioPersonal,
+      ),
   },
   {
     path: 'projects/portfolio-professional',
