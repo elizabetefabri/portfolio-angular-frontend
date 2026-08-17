@@ -13,67 +13,12 @@
       </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="mainContent">
-      <!-- Coluna Esquerda - Carrossel -->
-      <section class="carouselSection" aria-label="Galeria de imagens">
-        <div class="carousel">
-          @if (activeImage(); as image) {
-            <img
-              [src]="image.src"
-              [alt]="image.alt"
-              class="carouselImage"
-              (click)="openLightbox(currentIndex())"
-            />
-          }
-
-          @if (hasMultipleImages()) {
-            <button
-              type="button"
-              class="carouselNav carouselNav--prev"
-              aria-label="Imagem anterior"
-              (click)="previousImage()"
-            >
-              <span aria-hidden="true">‹</span>
-            </button>
-
-            <button
-              type="button"
-              class="carouselNav carouselNav--next"
-              aria-label="Próxima imagem"
-              (click)="nextImage()"
-            >
-              <span aria-hidden="true">›</span>
-            </button>
-          }
-        </div>
-
-        <div class="carouselFooter">
-          @if (hasMultipleImages()) {
-            <div class="thumbnails">
-              @for (img of galleryImages(); let idx = $index; track img.src) {
-                <button
-                  type="button"
-                  class="thumbnail"
-                  [class.active]="idx === currentIndex()"
-                  (click)="selectImage(idx)"
-                  [attr.aria-label]="'Ver imagem ' + (idx + 1)"
-                >
-                  <img [src]="img.src" [alt]="" class="thumbnailImage" />
-                </button>
-              }
-            </div>
-          }
-
-          <span class="imageCounter" aria-live="polite">{{ imageCounter() }}</span>
-        </div>
-      </section>
-
-      <!-- Coluna Direita -->
-      <aside class="contextSection">
-        <div class="quickInfo">
-          <div class="quickInfoHeader">
-            <span class="quickInfoTitle">Stack Tecnológica</span>
+    <!-- Overview -->
+    <section class="overviewSection" aria-label="Resumo do projeto">
+      <div class="overviewCard">
+        <div class="overviewHeader">
+          <div class="overviewTechs">
+            <span class="overviewTitle">Stack Tecnológica</span>
             <div class="techsList">
               @for (tech of project.techs; track tech) {
                 <app-tech-badge [tech]="tech" />
@@ -106,7 +51,7 @@
           </div>
         </div>
 
-        <div class="infoCards">
+        <div class="overviewBody">
           <article class="infoCard infoCard--about">
             <h2 class="infoCardTitle">Sobre</h2>
             <p class="text">{{ project.description }}</p>
@@ -131,8 +76,62 @@
             </ul>
           </article>
         </div>
-      </aside>
-    </div>
+      </div>
+    </section>
+
+    <!-- Carrossel -->
+    <section class="carouselSection" aria-label="Galeria de imagens">
+      <div class="carousel">
+        @if (activeImage(); as image) {
+          <img
+            [src]="image.src"
+            [alt]="image.alt"
+            class="carouselImage"
+            (click)="openLightbox(currentIndex())"
+          />
+        }
+
+        @if (hasMultipleImages()) {
+          <button
+            type="button"
+            class="carouselNav carouselNav--prev"
+            aria-label="Imagem anterior"
+            (click)="previousImage()"
+          >
+            <span aria-hidden="true">‹</span>
+          </button>
+
+          <button
+            type="button"
+            class="carouselNav carouselNav--next"
+            aria-label="Próxima imagem"
+            (click)="nextImage()"
+          >
+            <span aria-hidden="true">›</span>
+          </button>
+        }
+      </div>
+
+      <div class="carouselFooter">
+        @if (hasMultipleImages()) {
+          <div class="thumbnails">
+            @for (img of galleryImages(); let idx = $index; track img.src) {
+              <button
+                type="button"
+                class="thumbnail"
+                [class.active]="idx === currentIndex()"
+                (click)="selectImage(idx)"
+                [attr.aria-label]="'Ver imagem ' + (idx + 1)"
+              >
+                <img [src]="img.src" [alt]="" class="thumbnailImage" />
+              </button>
+            }
+          </div>
+        }
+
+        <span class="imageCounter" aria-live="polite">{{ imageCounter() }}</span>
+      </div>
+    </section>
 
     <!-- Galeria -->
     @if (galleryImages().length > 0) {
