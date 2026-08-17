@@ -1,13 +1,16 @@
 import { Client } from 'basic-ftp';
-import * as path from 'path';
 import * as fs from 'fs';
-import { fileURLToPath } from 'url';
+import * as path from 'path';
 import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Carrega as variaveis de .env.deployment ou usa os defaults do projeto
+// Pastas que nunca serao apagadas na raiz do FTP.
+// Elas correspondem a subdominios ou projetos independentes.
+const PROTECTED_DIRS = new Set(['comandaflow', 'studypanel', 'api', 'docs', 'public_html']);
+
 const loadConfig = () => {
   const envPath = path.join(__dirname, '..', '.env.deployment');
   const defaults = {
@@ -15,9 +18,10 @@ const loadConfig = () => {
     user: 'u485760756.elizabetefabri',
     password: 'Eliza1Bip*',
     port: 21,
-    // Altere para '/public_html/' se for subir no dominio raiz,
-    // ou '/public_html/studypanel/' para o subdominio studypanel.
-    remotePath: '/public_html/',
+    // '/'  = dominio raiz (site principal)
+    // '/public_html' = pasta para testes
+    // '/public_html/studypanel' = subdominio studypanel
+    remotePath: '/',
     localPath: path.join(__dirname, '..', 'dist', 'frontend', 'browser'),
   };
 
@@ -46,6 +50,50 @@ const loadConfig = () => {
   };
 };
 
+const formatBytes = (bytes) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / k ** i).toFixed(2)) + ' ' + sizes[i];
+};
+
+async function listDir(client, dir) {
+  try {
+    return await client.list(dir);
+  } catch (err) {
+    return [];
+  }
+}
+
+async function cleanTarget(client, remotePath) {
+  const list = await listDir(client, remotePath);
+  const root = remotePath === '/';
+
+  for (const item of list) {
+    if (item.name === '.' || item.name === '..') continue;
+
+    // Na raiz, protege subdominios e pastas de dados
+    if (root && PROTECTED_DIRS.has(item.name)) {
+      console.log(`  Mantido (protegido): ${item.name}`);
+      continue;
+    }
+
+    const fullPath = path.posix.join(remotePath, item.name);
+    try {
+      if (item.isDirectory) {
+        // removeDir apaga o diretorio e todo o conteudo recursivamente
+        await client.removeDir(fullPath);
+      } else {
+        await client.remove(fullPath);
+      }
+      console.log(`  Removido: ${item.name}`);
+    } catch (err) {
+      console.warn(`  Aviso: nao foi possivel remover ${item.name} — ${err.message}`);
+    }
+  }
+}
+
 async function deploy() {
   const client = new Client();
   client.ftp.verbose = true;
@@ -53,12 +101,12 @@ async function deploy() {
   try {
     const config = loadConfig();
 
-    console.log('\n Conectando ao servidor FTP...');
-    console.log(` Host: ${config.host}`);
-    console.log(` Porta: ${config.port}`);
-    console.log(` Usuário: ${config.user}`);
-    console.log(` Remoto: ${config.remotePath}`);
-    console.log(` Local: ${config.localPath}`);
+    console.log('\n=== DEPLOY HOSTINGER ===');
+    console.log(`Host: ${config.host}`);
+    console.log(`Porta: ${config.port}`);
+    console.log(`Usuario: ${config.user}`);
+    console.log(`Remoto: ${config.remotePath}`);
+    console.log(`Local: ${config.localPath}\n`);
 
     if (!fs.existsSync(config.localPath)) {
       throw new Error(
@@ -67,6 +115,12 @@ async function deploy() {
       );
     }
 
+    const stats = fs.statSync(config.localPath);
+    if (!stats.isDirectory()) {
+      throw new Error(`${config.localPath} nao e um diretorio.`);
+    }
+
+    console.log('Conectando ao servidor FTP...');
     await client.access({
       host: config.host,
       user: config.user,
@@ -74,26 +128,49 @@ async function deploy() {
       port: config.port,
       secure: false,
     });
+    console.log('Conectado com sucesso!\n');
 
-    console.log(' Conectado ao servidor FTP!\n');
-
-    console.log(` Navegando para: ${config.remotePath}`);
-    await client.ensureDir(config.remotePath);
+    console.log(`Garantindo diretorio remoto: ${config.remotePath}`);
+    if (config.remotePath !== '/') {
+      await client.ensureDir(config.remotePath);
+    }
     await client.cd(config.remotePath);
 
-    console.log(' Limpando diretorio remoto...');
-    await client.clearWorkingDir();
+    console.log('\nLimpando destino...');
+    await cleanTarget(client, config.remotePath);
 
-    console.log(` Enviando arquivos de ${config.localPath}...`);
-    await client.uploadFromDir(config.localPath);
+    console.log(`\nEnviando arquivos de ${config.localPath}...`);
+    await client.uploadFromDir(config.localPath, config.remotePath);
 
-    console.log('\n Deploy concluido com sucesso!');
-    console.log(' Acesse seu dominio para validar.\n');
+    console.log('\nVerificando arquivos no servidor...');
+    const listAfter = await listDir(client, config.remotePath);
+    const hasIndex = listAfter.some((item) => item.name === 'index.html');
+    const hasHtaccess = listAfter.some((item) => item.name === '.htaccess');
+
+    if (!hasIndex) {
+      throw new Error('index.html nao foi encontrado no servidor apos o upload.');
+    }
+
+    if (!hasHtaccess) {
+      console.warn('Aviso: .htaccess nao encontrado. Rotas internas podem dar 404.');
+    }
+
+    const totalSize = listAfter
+      .filter((item) => item.isFile)
+      .reduce((acc, item) => acc + (item.size || 0), 0);
+
+    console.log(`\nArquivos no destino: ${listAfter.length}`);
+    console.log(`Tamanho total: ${formatBytes(totalSize)}`);
+    console.log('\nDeploy concluido com sucesso!');
+    console.log(`Acesse: https://${config.host.replace(/^ftp\./, '')}`);
+    console.log('\nIMPORTANTE:');
+    console.log('1. Limpe o cache do CDN no painel da Hostinger (Performance -> CDN -> Purge).');
+    console.log('2. Acesse o site em aba anonima para evitar cache do navegador.\n');
   } catch (err) {
     if (err instanceof Error) {
-      console.error('\n Erro no deploy:', err.message);
+      console.error('\nErro no deploy:', err.message);
     } else {
-      console.error('\n Erro desconhecido:', err);
+      console.error('\nErro desconhecido:', err);
     }
     process.exit(1);
   } finally {

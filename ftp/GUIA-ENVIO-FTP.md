@@ -1,35 +1,19 @@
-# Guia de envio via FTP
+# Guia de envio via FTP (Hostinger)
 
-Este guia explica como enviar o build do frontend para o servidor usando o script `scripts/deploy.mjs` (Node + `basic-ftp`) ou o plugin **SFTP** no VS Code.
+Este guia descreve a solucao testada e aprovada para fazer deploy do portfolio Angular no domínio `elizabetesousafabri.com.br`.
 
-## 1. O que enviar
+## 1. O problema que resolvimos
 
-O Angular gera o build de producao em duas pastas:
+O domínio na Hostinger aponta para a **raiz do FTP (`/`)**, nao para `public_html`. A pasta `public_html` existia, mas nao era usada pelo site principal. A raiz continha um site antigo em Next.js que conflitava com as rotas do Angular.
 
-```
-dist/frontend/browser   <- arquivos estaticos (HTML, CSS, JS, imagens)
-dist/frontend/server    <- servidor SSR (nao enviar)
-```
+A solucao correta e:
 
-**O upload deve ser feito apenas do conteudo de `dist/frontend/browser` para a pasta correta no servidor.**
+1. Fazer deploy na **raiz do FTP (`/`)**.
+2. Remover o conteudo antigo do Next.js (`_next`, `projects`, `dashboard`, `login`, `images` antiga etc.).
+3. Proteger pastas de subdominios (`comandaflow`, `studypanel`, `api`, `docs`).
+4. Manter o `.htaccess` para o Angular SPA funcionar em rotas internas.
 
-## 2. Dados de acesso (Hostinger)
-
-| Campo   | Valor                            |
-| ------- | -------------------------------- |
-| Host    | `ftp.elizabetesousafabri.com.br` |
-| Usuario | `u485760756.elizabetefabri`      |
-| Senha   | `Eliza1Bip*`                     |
-| Porta   | `21`                             |
-
-Caminhos comuns:
-
-| Destino                                              | Exemplo de `FTP_REMOTE_PATH` |
-| ---------------------------------------------------- | ---------------------------- |
-| Domínio raiz (`elizabetesousafabri.com.br`)          | `/public_html/`              |
-| Subdomínio (`studypanel.elizabetesousafabri.com.br`) | `/public_html/studypanel/`   |
-
-## 3. Configurar o deploy
+## 2. Dados de acesso
 
 Crie o arquivo `.env.deployment` na raiz do projeto a partir do exemplo:
 
@@ -37,18 +21,34 @@ Crie o arquivo `.env.deployment` na raiz do projeto a partir do exemplo:
 cp .env.deployment.example .env.deployment
 ```
 
-Edite o arquivo com o destino desejado:
+Conteudo recomendado para o domínio raiz:
 
 ```
 FTP_HOST=ftp.elizabetesousafabri.com.br
 FTP_USER=u485760756.elizabetefabri
 FTP_PASSWORD=Eliza1Bip*
 FTP_PORT=21
-FTP_REMOTE_PATH=/public_html/
+FTP_REMOTE_PATH=/
 FTP_LOCAL_PATH=dist/frontend/browser
 ```
 
+| Campo        | Valor                            |
+| ------------ | -------------------------------- |
+| Host         | `ftp.elizabetesousafabri.com.br` |
+| Usuario      | `u485760756.elizabetefabri`      |
+| Senha        | `Eliza1Bip*`                     |
+| Porta        | `21`                             |
+| Destino raiz | `/`                              |
+
 > O arquivo `.env.deployment` está no `.gitignore` e nao será commitado.
+
+## 3. Destinos comuns
+
+| Destino                                              | `FTP_REMOTE_PATH` |
+| ---------------------------------------------------- | ----------------- |
+| Domínio raiz (`elizabetesousafabri.com.br`)          | `/`               |
+| Subdomínio (`studypanel.elizabetesousafabri.com.br`) | `/studypanel`     |
+| Pasta de testes                                      | `/public_html`    |
 
 ## 4. Build de producao
 
@@ -56,13 +56,11 @@ FTP_LOCAL_PATH=dist/frontend/browser
 npm run build
 ```
 
-Verifique se `dist/frontend/browser/.htaccess` existe:
+O resultado estará em `dist/frontend/browser`. Verifique se `.htaccess` existe:
 
 ```bash
 ls -la dist/frontend/browser/.htaccess
 ```
-
-Se nao existir, confira se `src/.htaccess` esta no projeto e se `angular.json` inclui ele em `assets`.
 
 ## 5. Executar o deploy
 
@@ -70,85 +68,60 @@ Se nao existir, confira se `src/.htaccess` esta no projeto e se `angular.json` i
 npm run deploy:ftp
 ```
 
-Esse comando roda `node scripts/deploy.mjs` e faz:
+O script `scripts/deploy.mjs` faz:
 
-1. Conecta no FTP.
-2. Garante que o diretorio remoto existe.
-3. **Limpa** o diretorio remoto (remove arquivos antigos).
-4. Envia o conteudo de `dist/frontend/browser`.
+1. Conecta ao FTP da Hostinger.
+2. Limpa o destino informado em `FTP_REMOTE_PATH`.
+3. Na raiz (`/`), **protege** as pastas `comandaflow`, `studypanel`, `api`, `docs` e `public_html`.
+4. Remove o restante (arquivos antigos do Next.js, pastas conflitantes etc.).
+5. Envia o conteudo de `dist/frontend/browser`.
+6. Verifica se `index.html` e `.htaccess` foram enviados.
 
-## 6. Deploy pelo VS Code (alternativa)
+## 6. Limpar cache do CDN
 
-Se preferir o plugin **SFTP**:
+A Hostinger utiliza o HCDN. Após o deploy, limpe o cache pelo painel:
 
-1. Instale a extensao `Natizyskunk.sftp`.
-2. Configure `.vscode/sftp.json`:
+1. Acesse `https://hpanel.hostinger.com`.
+2. Vá em **Performance → CDN**.
+3. Clique em **Purge cache** (ou **Flush cache**).
 
-```json
-{
-  "name": "Hostinger - Portfolio",
-  "host": "ftp.elizabetesousafabri.com.br",
-  "protocol": "ftp",
-  "port": 21,
-  "username": "u485760756.elizabetefabri",
-  "password": "Eliza1Bip*",
-  "remotePath": "/public_html",
-  "context": "dist/frontend/browser",
-  "uploadOnSave": false
-}
+Se nao tiver acesso, o cache expira sozinho em alguns minutos. Para testar antes do cache expirar:
+
+- Abra o site em **janela anônima**.
+- Use query string: `https://elizabetesousafabri.com.br/?nocache=1`.
+
+## 7. Verificar se funcionou
+
+Comandos uteis:
+
+```bash
+# Verifica se o index.html carrega
+curl -s https://elizabetesousafabri.com.br | head -n 10
+
+# Verifica se o main.js carrega
+curl -s https://elizabetesousafabri.com.br/main-7LLJKW5Y.js | head -c 50
+
+# Verifica se rotas internas funcionam (deve retornar o index.html)
+curl -s https://elizabetesousafabri.com.br/projects/caderno-inteligente | head -n 10
 ```
 
-3. Use `SFTP: Upload Folder` e escolha `dist/frontend/browser`.
+## 8. O que muda no site
 
-## 7. Cache do CDN (muito importante)
+- A raiz `/` redireciona automaticamente para `/projects/portfolio-personal`.
+- As rotas de projeto funcionam, ex: `/projects/caderno-inteligente`.
+- O carrossel, as tabs e os icones Lucide estão no ar.
 
-O domínio `elizabetesousafabri.com.br` e o subdomínio `studypanel` usam o CDN da Hostinger (`*.cdn.hstgr.net`). Mesmo com o upload correto, o conteudo antigo pode continuar no ar por cache.
+## 9. Cuidados
 
-Acoes necessarias:
-
-1. Acesse o painel da Hostinger.
-2. Vá em **Cache → Limpar cache** ou **Performance → CDN → Purge cache**.
-3. Como alternativa, mude os registros DNS de `ALIAS`/`CNAME` do domínio para um `A` apontando diretamente para o IP do servidor (`195.200.3.30`).
-
-## 8. Verificar o deploy
-
-Apos o upload e limpeza de cache:
-
-```
-https://elizabetesousafabri.com.br
-```
-
-A rota `/` redireciona para `/projects/portfolio-personal`.
-
-Teste uma rota interna:
-
-```
-https://elizabetesousafabri.com.br/projects/caderno-inteligente
-```
-
-## 9. Problemas comuns
-
-### Upload feito, mas site nao mudou
-
-- O conteudo foi enviado para a pasta errada (`/public_html` vs `/public_html/studypanel`).
-- O cache do CDN ainda nao foi limpo.
-- O dominio esta configurado como `ALIAS` para o CDN em vez de apontar diretamente para o servidor FTP.
-
-### Arquivos de projeto no `public_html`
-
-Se a pasta `public_html` contem `package.json`, `tsconfig.json` etc., o upload anterior enviou a raiz do projeto. O novo deploy limpa o destino e envia apenas o build.
-
-### Erro de conexao no FTP
-
-- Confirme usuario e senha.
-- Verifique se a senha contem caracteres especiais; se sim, coloque entre aspas no `.env.deployment`.
-- A Hostinger pode exigir conexao explicita (porta 21, `secure: false`).
+- **Nunca use `FTP_REMOTE_PATH=/` sem o `.env.deployment` configurado.** O deploy limpa o destino.
+- As pastas `comandaflow`, `studypanel`, `api`, `docs` e `public_html` sao protegidas, mas todo o resto na raiz sera removido.
+- Se quiser preservar algum arquivo na raiz, mova-o para `public_html` ou adicione no script `scripts/deploy.mjs` em `PROTECTED_DIRS`.
 
 ## 10. Fluxo resumido
 
 1. `npm run build`
-2. Confira se `dist/frontend/browser/.htaccess` existe
-3. Configure `.env.deployment`
+2. Confira `dist/frontend/browser/.htaccess`
+3. Verifique `.env.deployment` (destino `/` para domínio raiz)
 4. `npm run deploy:ftp`
 5. Limpe o cache do CDN no painel da Hostinger
-6. Acesse o dominio e valide
+6. Acesse `https://elizabetesousafabri.com.br` e valide
