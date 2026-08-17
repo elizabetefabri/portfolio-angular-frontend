@@ -7,6 +7,14 @@ export interface ProjectImage {
   alt: string;
 }
 
+export interface BackendContext {
+  context: string;
+  database: string;
+  architecture: string[];
+  endpoints: string[];
+  diagram: string;
+}
+
 export interface Project {
   slug: string;
   title: string;
@@ -20,4 +28,5 @@ export interface Project {
   solution: string;
   technicalDecisions: string[];
   gallery?: ProjectImage[];
+  backendContext?: BackendContext;
 }

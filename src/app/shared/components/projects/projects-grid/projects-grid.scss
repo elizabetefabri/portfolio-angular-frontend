@@ -1,9 +1,10 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-  gap: 2rem;
-  padding: 2rem 1rem;
-  max-width: 75rem;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 1.5rem 4%;
   margin: 0 auto;
 }
 
@@ -14,23 +15,36 @@
   font-size: 1.1rem;
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 30rem) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding: 2rem 5%;
+  }
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem;
+    padding: 2rem 6%;
+    max-width: 100%;
   }
 }
 
 @media (min-width: 64rem) {
   .grid {
     grid-template-columns: repeat(4, 1fr);
-    max-width: 90rem;
+    gap: 1.75rem;
+    padding: 2.5rem 6%;
   }
 }
 
-@media (max-width: 48rem) {
+@media (min-width: 80rem) {
   .grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 1.5rem 1rem;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2rem;
+    padding: 2.5rem 8%;
+    max-width: 120rem;
   }
 }

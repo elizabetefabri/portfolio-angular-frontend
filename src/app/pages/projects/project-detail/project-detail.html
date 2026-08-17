@@ -18,23 +18,23 @@
       <!-- Coluna Esquerda - Carrossel -->
       <div class="carouselSection">
         <div class="carousel">
-          @if (galleryImages().length > 0) {
+          @if (activeImage(); as image) {
             <img
-              [src]="galleryImages()[0].src"
-              [alt]="galleryImages()[0].alt"
-              width="600"
-              height="400"
+              [src]="image.src"
+              [alt]="image.alt"
               class="carouselImage"
+              (click)="openLightbox(currentIndex())"
             />
           }
         </div>
 
-        @if (galleryImages().length > 1) {
+        @if (hasMultipleImages()) {
           <div class="carouselControls">
             <button
               type="button"
               class="carouselBtn"
               aria-label="Imagem anterior"
+              (click)="previousImage()"
             >
               <span aria-hidden="true">‹</span>
             </button>
@@ -43,16 +43,12 @@
               @for (img of galleryImages(); let idx = $index; track img.src) {
                 <button
                   type="button"
-                  class="thumbnail active"
+                  class="thumbnail"
+                  [class.active]="idx === currentIndex()"
+                  (click)="selectImage(idx)"
                   [attr.aria-label]="'Ver imagem ' + (idx + 1)"
                 >
-                  <img
-                    [src]="img.src"
-                    [alt]="img.alt"
-                    width="80"
-                    height="60"
-                    class="thumbnailImage"
-                  />
+                  <img [src]="img.src" [alt]="img.alt" class="thumbnailImage" />
                 </button>
               }
             </div>
@@ -61,6 +57,7 @@
               type="button"
               class="carouselBtn"
               aria-label="Próxima imagem"
+              (click)="nextImage()"
             >
               <span aria-hidden="true">›</span>
             </button>
@@ -70,9 +67,28 @@
 
       <!-- Coluna Direita - Contexto e Ações -->
       <div class="contextSection">
-        <div class="description">
+        <div class="aboutCard">
           <h2 class="sectionTitle">Sobre</h2>
           <p class="text">{{ project.description }}</p>
+
+          <div class="aboutSubsection">
+            <h3 class="subsectionTitle">Problema</h3>
+            <p class="text">{{ project.problem }}</p>
+          </div>
+
+          <div class="aboutSubsection">
+            <h3 class="subsectionTitle">Solução</h3>
+            <p class="text">{{ project.solution }}</p>
+          </div>
+
+          <div class="aboutSubsection">
+            <h3 class="subsectionTitle">Decisões Técnicas</h3>
+            <ul class="list">
+              @for (decision of project.technicalDecisions; track decision) {
+                <li class="listItem">{{ decision }}</li>
+              }
+            </ul>
+          </div>
         </div>
 
         <div class="techs">
@@ -85,12 +101,7 @@
         </div>
 
         <div class="actions">
-          <a
-            [href]="project.repoUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btnPrimary"
-          >
+          <a [href]="project.repoUrl" target="_blank" rel="noopener noreferrer" class="btnPrimary">
             <img src="/images/icons/github-black.svg" alt="" class="btnIconImg" />
             GitHub
           </a>
@@ -110,46 +121,117 @@
       </div>
     </div>
 
-    <!-- Conteúdo - Full Width -->
-    <div class="details">
+    <!-- Galeria -->
+    @if (galleryImages().length > 0) {
       <section class="section">
-        <h2 class="sectionTitle">Problema</h2>
-        <p class="text">{{ project.problem }}</p>
-      </section>
-
-      <section class="section">
-        <h2 class="sectionTitle">Solução</h2>
-        <p class="text">{{ project.solution }}</p>
-      </section>
-
-      <section class="section">
-        <h2 class="sectionTitle">Decisões Técnicas</h2>
-        <ul class="list">
-          @for (decision of project.technicalDecisions; track decision) {
-            <li class="listItem">{{ decision }}</li>
+        <h2 class="sectionTitle">Galeria</h2>
+        <div class="gallery">
+          @for (img of galleryImages(); let idx = $index; track img.src) {
+            <button
+              type="button"
+              class="galleryItem"
+              (click)="openLightbox(idx)"
+              [attr.aria-label]="'Ampliar imagem: ' + img.alt"
+            >
+              <img [src]="img.src" [alt]="img.alt" class="galleryImage" />
+              <p class="galleryCaption">{{ img.alt }}</p>
+            </button>
           }
-        </ul>
+        </div>
       </section>
+    }
 
-      @if (project.gallery && project.gallery.length > 1) {
-        <section class="section">
-          <h2 class="sectionTitle">Galeria Completa</h2>
-          <div class="gallery">
-            @for (img of project.gallery; track img.src) {
-              <div class="galleryItem">
-                <img
-                  [src]="img.src"
-                  [alt]="img.alt"
-                  width="400"
-                  height="300"
-                  class="galleryImage"
-                />
-                <p class="galleryCaption">{{ img.alt }}</p>
-              </div>
-            }
+    <!-- Backend -->
+    @if (project.backendContext; as backend) {
+      <section class="section">
+        <h2 class="sectionTitle">Backend</h2>
+
+        <div class="backendGrid">
+          <div class="backendCard">
+            <h3 class="subsectionTitle">Contexto</h3>
+            <p class="text">{{ backend.context }}</p>
           </div>
-        </section>
+
+          <div class="backendCard">
+            <h3 class="subsectionTitle">Banco de dados</h3>
+            <p class="text">{{ backend.database }}</p>
+          </div>
+        </div>
+
+        <div class="backendDiagram">
+          <h3 class="subsectionTitle">Diagrama da arquitetura</h3>
+          <pre class="diagramCode">{{ backend.diagram }}</pre>
+        </div>
+
+        <div class="backendGrid">
+          <div class="backendCard">
+            <h3 class="subsectionTitle">Camadas</h3>
+            <ul class="list">
+              @for (item of backend.architecture; track item) {
+                <li class="listItem">{{ item }}</li>
+              }
+            </ul>
+          </div>
+
+          <div class="backendCard">
+            <h3 class="subsectionTitle">Endpoints principais</h3>
+            <ul class="list">
+              @for (endpoint of backend.endpoints; track endpoint) {
+                <li class="listItem">{{ endpoint }}</li>
+              }
+            </ul>
+          </div>
+        </div>
+      </section>
+    }
+  </div>
+}
+
+<!-- Lightbox -->
+@if (lightboxOpen()) {
+  <div
+    class="lightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Visualização ampliada"
+    (click)="closeLightbox()"
+  >
+    <button
+      type="button"
+      class="lightboxClose"
+      (click)="closeLightbox()"
+      aria-label="Fechar visualização"
+    >
+      <span aria-hidden="true">×</span>
+    </button>
+
+    @if (hasMultipleImages()) {
+      <button
+        type="button"
+        class="lightboxNav lightboxNav--prev"
+        (click)="$event.stopPropagation(); previousLightboxImage()"
+        aria-label="Imagem anterior"
+      >
+        <span aria-hidden="true">‹</span>
+      </button>
+    }
+
+    <div class="lightboxContent" (click)="$event.stopPropagation()">
+      @if (activeLightboxImage(); as img) {
+        <img [src]="img.src" [alt]="img.alt" class="lightboxImage" />
+        <p class="lightboxCaption">{{ img.alt }}</p>
       }
     </div>
+
+    @if (hasMultipleImages()) {
+      <button
+        type="button"
+        class="lightboxNav lightboxNav--next"
+        (click)="$event.stopPropagation(); nextLightboxImage()"
+        aria-label="Próxima imagem"
+      >
+        <span aria-hidden="true">›</span>
+      </button>
+    }
   </div>
 }

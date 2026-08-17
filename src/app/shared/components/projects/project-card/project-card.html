@@ -20,14 +20,7 @@
     </div>
 
     <div class="actions">
-      <a
-        [routerLink]="['/projects', project().slug]"
-        class="btnPrimary"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Ver projeto
-      </a>
+      <a [routerLink]="['/projects', project().slug]" class="btnPrimary"> Ver projeto </a>
 
       <a
         [href]="project().repoUrl"
