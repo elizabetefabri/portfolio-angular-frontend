@@ -55,6 +55,12 @@ export class ProjectDetail implements OnInit {
     () => this.project()?.category === 'Backend' && !!this.project()?.backendContext,
   );
 
+  readonly imageCounter = computed(() => {
+    const total = this.galleryImages().length;
+    if (total === 0) return '';
+    return `${this.currentIndex() + 1} / ${total}`;
+  });
+
   constructor() {
     effect(() => {
       const images = this.galleryImages();

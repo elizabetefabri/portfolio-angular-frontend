@@ -1,7 +1,7 @@
 @if (project(); as project) {
   <div class="pageContainer">
     <!-- Header -->
-    <div class="header">
+    <header class="header">
       <a [routerLink]="portfolioUrl()" class="backLink">
         <span class="backIcon" aria-hidden="true">←</span>
         Voltar
@@ -9,14 +9,14 @@
 
       <div class="headerContent">
         <h1 class="title">{{ project.title }}</h1>
-        <p class="category">{{ project.category }}</p>
+        <span class="categoryTag">{{ project.category }}</span>
       </div>
-    </div>
+    </header>
 
-    <!-- Main Content - 2 Colunas -->
+    <!-- Main Content -->
     <div class="mainContent">
       <!-- Coluna Esquerda - Carrossel -->
-      <div class="carouselSection">
+      <section class="carouselSection" aria-label="Galeria de imagens">
         <div class="carousel">
           @if (activeImage(); as image) {
             <img
@@ -26,19 +26,30 @@
               (click)="openLightbox(currentIndex())"
             />
           }
-        </div>
 
-        @if (hasMultipleImages()) {
-          <div class="carouselControls">
+          @if (hasMultipleImages()) {
             <button
               type="button"
-              class="carouselBtn"
+              class="carouselNav carouselNav--prev"
               aria-label="Imagem anterior"
               (click)="previousImage()"
             >
               <span aria-hidden="true">‹</span>
             </button>
 
+            <button
+              type="button"
+              class="carouselNav carouselNav--next"
+              aria-label="Próxima imagem"
+              (click)="nextImage()"
+            >
+              <span aria-hidden="true">›</span>
+            </button>
+          }
+        </div>
+
+        <div class="carouselFooter">
+          @if (hasMultipleImages()) {
             <div class="thumbnails">
               @for (img of galleryImages(); let idx = $index; track img.src) {
                 <button
@@ -48,77 +59,79 @@
                   (click)="selectImage(idx)"
                   [attr.aria-label]="'Ver imagem ' + (idx + 1)"
                 >
-                  <img [src]="img.src" [alt]="img.alt" class="thumbnailImage" />
+                  <img [src]="img.src" [alt]="" class="thumbnailImage" />
                 </button>
               }
             </div>
+          }
 
-            <button
-              type="button"
-              class="carouselBtn"
-              aria-label="Próxima imagem"
-              (click)="nextImage()"
+          <span class="imageCounter" aria-live="polite">{{ imageCounter() }}</span>
+        </div>
+      </section>
+
+      <!-- Coluna Direita -->
+      <aside class="contextSection">
+        <div class="quickInfo">
+          <div class="quickInfoHeader">
+            <span class="quickInfoTitle">Stack Tecnológica</span>
+            <div class="techsList">
+              @for (tech of project.techs; track tech) {
+                <app-tech-badge [tech]="tech" />
+              }
+            </div>
+          </div>
+
+          <div class="actions">
+            <a
+              [href]="project.repoUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btnPrimary"
             >
-              <span aria-hidden="true">›</span>
-            </button>
+              <img src="/images/icons/github-black.svg" alt="" class="btnIconImg" />
+              GitHub
+            </a>
+
+            @if (project.demoUrl) {
+              <a
+                [href]="project.demoUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btnSecondary"
+              >
+                <img src="/images/icons/link.svg" alt="" class="btnIconImg" />
+                Deploy
+              </a>
+            }
           </div>
-        }
-      </div>
+        </div>
 
-      <!-- Coluna Direita - Contexto e Ações -->
-      <div class="contextSection">
-        <div class="aboutCard">
-          <h2 class="sectionTitle">Sobre</h2>
-          <p class="text">{{ project.description }}</p>
+        <div class="infoCards">
+          <article class="infoCard infoCard--about">
+            <h2 class="infoCardTitle">Sobre</h2>
+            <p class="text">{{ project.description }}</p>
+          </article>
 
-          <div class="aboutSubsection">
-            <h3 class="subsectionTitle">Problema</h3>
+          <article class="infoCard infoCard--problem">
+            <h2 class="infoCardTitle infoCardTitle--problem">Problema</h2>
             <p class="text">{{ project.problem }}</p>
-          </div>
+          </article>
 
-          <div class="aboutSubsection">
-            <h3 class="subsectionTitle">Solução</h3>
+          <article class="infoCard infoCard--solution">
+            <h2 class="infoCardTitle infoCardTitle--solution">Solução</h2>
             <p class="text">{{ project.solution }}</p>
-          </div>
+          </article>
 
-          <div class="aboutSubsection">
-            <h3 class="subsectionTitle">Decisões Técnicas</h3>
+          <article class="infoCard infoCard--decisions">
+            <h2 class="infoCardTitle">Decisões Técnicas</h2>
             <ul class="list">
               @for (decision of project.technicalDecisions; track decision) {
                 <li class="listItem">{{ decision }}</li>
               }
             </ul>
-          </div>
+          </article>
         </div>
-
-        <div class="techs">
-          <h3 class="subsectionTitle">Stack Tecnológica</h3>
-          <div class="techsList">
-            @for (tech of project.techs; track tech) {
-              <app-tech-badge [tech]="tech" />
-            }
-          </div>
-        </div>
-
-        <div class="actions">
-          <a [href]="project.repoUrl" target="_blank" rel="noopener noreferrer" class="btnPrimary">
-            <img src="/images/icons/github-black.svg" alt="" class="btnIconImg" />
-            GitHub
-          </a>
-
-          @if (project.demoUrl) {
-            <a
-              [href]="project.demoUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btnSecondary"
-            >
-              <img src="/images/icons/link.svg" alt="" class="btnIconImg" />
-              Deploy
-            </a>
-          }
-        </div>
-      </div>
+      </aside>
     </div>
 
     <!-- Galeria -->
@@ -143,29 +156,29 @@
 
     <!-- Backend -->
     @if (project.backendContext; as backend) {
-      <section class="section">
+      <section class="section section--backend">
         <h2 class="sectionTitle">Backend</h2>
 
         <div class="backendGrid">
-          <div class="backendCard">
-            <h3 class="subsectionTitle">Contexto</h3>
+          <div class="backendCard backendCard--context">
+            <h3 class="backendCardTitle">Contexto</h3>
             <p class="text">{{ backend.context }}</p>
           </div>
 
-          <div class="backendCard">
-            <h3 class="subsectionTitle">Banco de dados</h3>
+          <div class="backendCard backendCard--database">
+            <h3 class="backendCardTitle">Banco de dados</h3>
             <p class="text">{{ backend.database }}</p>
           </div>
         </div>
 
         <div class="backendDiagram">
-          <h3 class="subsectionTitle">Diagrama da arquitetura</h3>
+          <h3 class="backendCardTitle">Diagrama da arquitetura</h3>
           <pre class="diagramCode">{{ backend.diagram }}</pre>
         </div>
 
         <div class="backendGrid">
-          <div class="backendCard">
-            <h3 class="subsectionTitle">Camadas</h3>
+          <div class="backendCard backendCard--architecture">
+            <h3 class="backendCardTitle">Camadas</h3>
             <ul class="list">
               @for (item of backend.architecture; track item) {
                 <li class="listItem">{{ item }}</li>
@@ -173,8 +186,8 @@
             </ul>
           </div>
 
-          <div class="backendCard">
-            <h3 class="subsectionTitle">Endpoints principais</h3>
+          <div class="backendCard backendCard--endpoints">
+            <h3 class="backendCardTitle">Endpoints principais</h3>
             <ul class="list">
               @for (endpoint of backend.endpoints; track endpoint) {
                 <li class="listItem">{{ endpoint }}</li>
