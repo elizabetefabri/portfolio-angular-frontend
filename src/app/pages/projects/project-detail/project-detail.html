@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="header">
       <a [routerLink]="portfolioUrl()" class="backLink">
-        <span class="backIcon" aria-hidden="true">←</span>
+        <svg lucideArrowLeft class="backIcon"></svg>
         Voltar
       </a>
 
@@ -58,7 +58,7 @@
                   aria-label="Imagem anterior"
                   (click)="previousImage()"
                 >
-                  <span aria-hidden="true">‹</span>
+                  <svg lucideChevronLeft class="navIcon"></svg>
                 </button>
 
                 <button
@@ -67,7 +67,7 @@
                   aria-label="Próxima imagem"
                   (click)="nextImage()"
                 >
-                  <span aria-hidden="true">›</span>
+                  <svg lucideChevronRight class="navIcon"></svg>
                 </button>
               }
             </div>
@@ -145,7 +145,7 @@
                   rel="noopener noreferrer"
                   class="btnSecondary"
                 >
-                  <img src="/images/icons/link.svg" alt="" class="btnIconImg" />
+                  <svg lucideLink class="btnIconImg"></svg>
                   Deploy
                 </a>
               }
@@ -241,7 +241,7 @@
       (click)="closeLightbox()"
       aria-label="Fechar visualização"
     >
-      <span aria-hidden="true">×</span>
+      <svg lucideX class="navIcon"></svg>
     </button>
 
     @if (hasMultipleImages()) {
@@ -251,7 +251,7 @@
         (click)="$event.stopPropagation(); previousLightboxImage()"
         aria-label="Imagem anterior"
       >
-        <span aria-hidden="true">‹</span>
+        <svg lucideChevronLeft class="navIcon"></svg>
       </button>
     }
 
@@ -269,7 +269,7 @@
         (click)="$event.stopPropagation(); nextLightboxImage()"
         aria-label="Próxima imagem"
       >
-        <span aria-hidden="true">›</span>
+        <svg lucideChevronRight class="navIcon"></svg>
       </button>
     }
   </div>

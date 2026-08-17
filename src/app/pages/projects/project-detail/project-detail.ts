@@ -1,12 +1,27 @@
 import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import {
+  LucideChevronLeft,
+  LucideChevronRight,
+  LucideLink,
+  LucideArrowLeft,
+  LucideX,
+} from '@lucide/angular';
 import { ProjectStore } from '../../../core/services/projects/project-store.service';
 import { TechBadge } from '../../../shared/components/projects/tech-badge/tech-badge';
 
 @Component({
   selector: 'app-project-detail',
   standalone: true,
-  imports: [RouterLink, TechBadge],
+  imports: [
+    RouterLink,
+    TechBadge,
+    LucideChevronLeft,
+    LucideChevronRight,
+    LucideLink,
+    LucideArrowLeft,
+    LucideX,
+  ],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss',
   host: {
