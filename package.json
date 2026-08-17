@@ -6,7 +6,7 @@
     "start": "ng serve --port 6001",
     "start:dev": "ng serve --port 6001",
     "build": "ng build",
-    "deploy:ftp": "bash scripts/deploy-ftp.sh",
+    "deploy:ftp": "node scripts/deploy.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs"
@@ -45,6 +45,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^20.17.19",
     "@types/uuid": "^10.0.0",
+    "basic-ftp": "^6.2.0",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
     "jest-preset-angular": "^17.0.0",

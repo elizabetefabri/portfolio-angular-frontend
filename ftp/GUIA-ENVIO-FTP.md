@@ -1,86 +1,62 @@
-# Guia de envio via FTP (VS Code)
+# Guia de envio via FTP
 
-Este guia explica como enviar o build do frontend para o servidor usando o plugin **SFTP** no VS Code.
+Este guia explica como enviar o build do frontend para o servidor usando o script `scripts/deploy.mjs` (Node + `basic-ftp`) ou o plugin **SFTP** no VS Code.
 
 ## 1. O que enviar
 
-O Angular gera o build de produção em duas pastas:
+O Angular gera o build de producao em duas pastas:
 
 ```
 dist/frontend/browser   <- arquivos estaticos (HTML, CSS, JS, imagens)
 dist/frontend/server    <- servidor SSR (nao enviar)
 ```
 
-**O upload deve ser feito apenas do conteudo de `dist/frontend/browser` para a pasta `public_html` do servidor.**
+**O upload deve ser feito apenas do conteudo de `dist/frontend/browser` para a pasta correta no servidor.**
 
-## 2. Plugin recomendado
+## 2. Dados de acesso (Hostinger)
 
-Extensao: **SFTP** por **Natizyskunk**  
-ID no marketplace: `Natizyskunk.sftp`
+| Campo   | Valor                            |
+| ------- | -------------------------------- |
+| Host    | `ftp.elizabetesousafabri.com.br` |
+| Usuario | `u485760756.elizabetefabri`      |
+| Senha   | `Eliza1Bip*`                     |
+| Porta   | `21`                             |
 
-Instalacao:
+Caminhos comuns:
 
-1. Abra o VS Code.
-2. Pressione `Ctrl + Shift + X` (ou `Cmd + Shift + X` no macOS) para abrir as extensões.
-3. Busque por `SFTP` e instale a extensao de **Natizyskunk**.
+| Destino                                              | Exemplo de `FTP_REMOTE_PATH` |
+| ---------------------------------------------------- | ---------------------------- |
+| Domínio raiz (`elizabetesousafabri.com.br`)          | `/public_html/`              |
+| Subdomínio (`studypanel.elizabetesousafabri.com.br`) | `/public_html/studypanel/`   |
 
-## 3. Dados de acesso (Hostinger)
+## 3. Configurar o deploy
 
-As credenciais estao registradas em `ftp/contas-ftp.md` e resumidas abaixo:
+Crie o arquivo `.env.deployment` na raiz do projeto a partir do exemplo:
 
-| Campo        | Valor                            |
-| ------------ | -------------------------------- |
-| Host         | `195.200.3.30`                   |
-| Usuario      | `u485760756.elizabetefabri`      |
-| Senha        | `Eliza1Bip*`                     |
-| Porta        | `21`                             |
-| Pasta remota | `public_html`                    |
-| Hostname     | `ftp.elizabetesousafabri.com.br` |
-
-## 4. Configurar o SFTP no VS Code
-
-Na raiz do projeto (`portfolio-angular-frontend/`), crie ou edite o arquivo `.vscode/sftp.json` com o conteudo abaixo:
-
-```json
-{
-  "name": "Hostinger - Portfolio",
-  "host": "195.200.3.30",
-  "protocol": "ftp",
-  "port": 21,
-  "username": "u485760756.elizabetefabri",
-  "password": "Eliza1Bip*",
-  "remotePath": "/public_html",
-  "uploadOnSave": false,
-  "useTempFile": false,
-  "openSsh": false,
-  "context": "dist/frontend/browser",
-  "ignore": [".git", ".env", "node_modules", "src", "docs", "ftp", "*.md", "*.spec.ts", ".vscode"]
-}
+```bash
+cp .env.deployment.example .env.deployment
 ```
 
-> Atencao: mantenha o arquivo `sftp.json` fora do controle de versao. Ele pode conter senhas.
+Edite o arquivo com o destino desejado:
 
-### Pontos importantes da configuracao
+```
+FTP_HOST=ftp.elizabetesousafabri.com.br
+FTP_USER=u485760756.elizabetefabri
+FTP_PASSWORD=Eliza1Bip*
+FTP_PORT=21
+FTP_REMOTE_PATH=/public_html/
+FTP_LOCAL_PATH=dist/frontend/browser
+```
 
-- `context`: indica a pasta local que sera enviada. Use sempre `dist/frontend/browser`.
-- `remotePath`: destino no servidor. Use `/public_html`.
-- O `.htaccess` ja esta dentro de `dist/frontend/browser` e sera enviado junto.
+> O arquivo `.env.deployment` está no `.gitignore` e nao será commitado.
 
-## 5. Gerar o build de producao
-
-Antes de enviar, sempre gere o build atualizado:
+## 4. Build de producao
 
 ```bash
 npm run build
 ```
 
-O resultado estará em:
-
-```
-dist/frontend/browser
-```
-
-Verifique se o arquivo `.htaccess` foi gerado na pasta:
+Verifique se `dist/frontend/browser/.htaccess` existe:
 
 ```bash
 ls -la dist/frontend/browser/.htaccess
@@ -88,75 +64,91 @@ ls -la dist/frontend/browser/.htaccess
 
 Se nao existir, confira se `src/.htaccess` esta no projeto e se `angular.json` inclui ele em `assets`.
 
-## 6. Enviar os arquivos para o servidor
-
-### Opção A — Upload da pasta completa (recomendado)
-
-1. Execute o build:
-
-   ```bash
-   npm run build
-   ```
-
-2. Abra a paleta de comandos (`Ctrl + Shift + P` ou `Cmd + Shift + P`).
-3. Digite e selecione: `SFTP: Upload Folder`.
-4. O VS Code enviara todo o conteudo de `dist/frontend/browser` para `public_html`.
-
-### Opção B — Script de deploy automatico
-
-Se tiver o `lftp` instalado, execute:
+## 5. Executar o deploy
 
 ```bash
-bash scripts/deploy-ftp.sh
+npm run deploy:ftp
 ```
 
-Esse script:
+Esse comando roda `node scripts/deploy.mjs` e faz:
 
-1. Roda `npm run build`.
-2. Conecta ao FTP.
-3. Remove o conteudo antigo de `public_html`.
+1. Conecta no FTP.
+2. Garante que o diretorio remoto existe.
+3. **Limpa** o diretorio remoto (remove arquivos antigos).
 4. Envia o conteudo de `dist/frontend/browser`.
 
-## 7. Limpar cache do CDN (importante)
+## 6. Deploy pelo VS Code (alternativa)
 
-O domínio utiliza um CDN da Hostinger. Mesmo apos o upload correto, o site antigo pode continuar aparecendo por cache.
+Se preferir o plugin **SFTP**:
 
-Acesse o painel da Hostinger e procure por:
+1. Instale a extensao `Natizyskunk.sftp`.
+2. Configure `.vscode/sftp.json`:
 
-- **Cache → Limpar cache**
-- Ou **Performance → CDN → Purge cache**
+```json
+{
+  "name": "Hostinger - Portfolio",
+  "host": "ftp.elizabetesousafabri.com.br",
+  "protocol": "ftp",
+  "port": 21,
+  "username": "u485760756.elizabetefabri",
+  "password": "Eliza1Bip*",
+  "remotePath": "/public_html",
+  "context": "dist/frontend/browser",
+  "uploadOnSave": false
+}
+```
 
-Se nao tiver acesso, aguarde de 10 a 60 minutos ou acesse com `?nocache=1` no final da URL.
+3. Use `SFTP: Upload Folder` e escolha `dist/frontend/browser`.
+
+## 7. Cache do CDN (muito importante)
+
+O domínio `elizabetesousafabri.com.br` e o subdomínio `studypanel` usam o CDN da Hostinger (`*.cdn.hstgr.net`). Mesmo com o upload correto, o conteudo antigo pode continuar no ar por cache.
+
+Acoes necessarias:
+
+1. Acesse o painel da Hostinger.
+2. Vá em **Cache → Limpar cache** ou **Performance → CDN → Purge cache**.
+3. Como alternativa, mude os registros DNS de `ALIAS`/`CNAME` do domínio para um `A` apontando diretamente para o IP do servidor (`195.200.3.30`).
 
 ## 8. Verificar o deploy
 
-Acesse o dominio para confirmar que a nova versao esta no ar:
+Apos o upload e limpeza de cache:
 
 ```
 https://elizabetesousafabri.com.br
 ```
 
-A rota raiz (`/`) redireciona automaticamente para `/projects/portfolio-personal`.
+A rota `/` redireciona para `/projects/portfolio-personal`.
 
-Teste tambem rotas internas, como:
+Teste uma rota interna:
 
 ```
 https://elizabetesousafabri.com.br/projects/caderno-inteligente
 ```
 
-Se aparecer erro 404, o `.htaccess` nao foi enviado ou o mod_rewrite nao esta ativado. Entre em contato com o suporte da Hostinger.
+## 9. Problemas comuns
 
-## 9. Subdomínios / Vercel
+### Upload feito, mas site nao mudou
 
-Os domínios adicionais (comandaflow, studypanel, api etc.) estao registrados em `ftp/elizabetesousafabri.com.br.txt`.  
-Para projetos no **Vercel**, crie a documentacao de domínios separadamente e aponte os registros DNS conforme necessário.
+- O conteudo foi enviado para a pasta errada (`/public_html` vs `/public_html/studypanel`).
+- O cache do CDN ainda nao foi limpo.
+- O dominio esta configurado como `ALIAS` para o CDN em vez de apontar diretamente para o servidor FTP.
+
+### Arquivos de projeto no `public_html`
+
+Se a pasta `public_html` contem `package.json`, `tsconfig.json` etc., o upload anterior enviou a raiz do projeto. O novo deploy limpa o destino e envia apenas o build.
+
+### Erro de conexao no FTP
+
+- Confirme usuario e senha.
+- Verifique se a senha contem caracteres especiais; se sim, coloque entre aspas no `.env.deployment`.
+- A Hostinger pode exigir conexao explicita (porta 21, `secure: false`).
 
 ## 10. Fluxo resumido
 
 1. `npm run build`
 2. Confira se `dist/frontend/browser/.htaccess` existe
-3. Configure `.vscode/sftp.json` (uma vez)
-4. `SFTP: Upload Folder` a partir de `dist/frontend/browser`
-5. Confirme destino `public_html`
-6. Limpe o cache do CDN no painel da Hostinger
-7. Acesse o dominio e valide
+3. Configure `.env.deployment`
+4. `npm run deploy:ftp`
+5. Limpe o cache do CDN no painel da Hostinger
+6. Acesse o dominio e valide
