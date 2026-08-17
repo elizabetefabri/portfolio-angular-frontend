@@ -22,6 +22,7 @@ export class ProjectDetail implements OnInit {
   readonly currentIndex = signal<number>(0);
   readonly lightboxOpen = signal<boolean>(false);
   readonly lightboxIndex = signal<number>(0);
+  readonly activeTab = signal<'images' | 'info'>('images');
 
   readonly project = computed(() => this.projectStore.findProjectBySlug(this.slug()));
 
@@ -114,6 +115,10 @@ export class ProjectDetail implements OnInit {
     const count = this.galleryImages().length;
     if (count === 0) return;
     this.lightboxIndex.update((i) => (i - 1 + count) % count);
+  }
+
+  setTab(tab: 'images' | 'info'): void {
+    this.activeTab.set(tab);
   }
 
   onKeydown(event: KeyboardEvent): void {

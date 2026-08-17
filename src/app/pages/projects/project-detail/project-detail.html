@@ -13,187 +13,216 @@
       </div>
     </header>
 
-    <!-- Overview -->
-    <section class="overviewSection" aria-label="Resumo do projeto">
-      <div class="overviewCard">
-        <div class="overviewHeader">
-          <div class="overviewTechs">
-            <span class="overviewTitle">Stack Tecnológica</span>
-            <div class="techsList">
-              @for (tech of project.techs; track tech) {
-                <app-tech-badge [tech]="tech" />
+    <!-- Tabs -->
+    <nav class="tabs" aria-label="Navegação do projeto">
+      <button
+        type="button"
+        class="tab"
+        [class.active]="activeTab() === 'images'"
+        (click)="setTab('images')"
+        [attr.aria-selected]="activeTab() === 'images'"
+      >
+        <span class="tabIcon" aria-hidden="true">🖼️</span>
+        Imagens
+      </button>
+
+      <button
+        type="button"
+        class="tab"
+        [class.active]="activeTab() === 'info'"
+        (click)="setTab('info')"
+        [attr.aria-selected]="activeTab() === 'info'"
+      >
+        <span class="tabIcon" aria-hidden="true">ℹ️</span>
+        Informações
+      </button>
+    </nav>
+
+    <!-- Tab Imagens -->
+    @if (activeTab() === 'images') {
+      <section class="tabPanel imagesTab" aria-label="Imagens do projeto">
+        <div class="imagesLayout">
+          <div class="carouselWrapper">
+            <div class="carousel">
+              @if (activeImage(); as image) {
+                <img
+                  [src]="image.src"
+                  [alt]="image.alt"
+                  class="carouselImage"
+                  (click)="openLightbox(currentIndex())"
+                />
               }
+
+              @if (hasMultipleImages()) {
+                <button
+                  type="button"
+                  class="carouselNav carouselNav--prev"
+                  aria-label="Imagem anterior"
+                  (click)="previousImage()"
+                >
+                  <span aria-hidden="true">‹</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="carouselNav carouselNav--next"
+                  aria-label="Próxima imagem"
+                  (click)="nextImage()"
+                >
+                  <span aria-hidden="true">›</span>
+                </button>
+              }
+            </div>
+
+            <div class="carouselFooter">
+              @if (hasMultipleImages()) {
+                <div class="thumbnails">
+                  @for (img of galleryImages(); let idx = $index; track img.src) {
+                    <button
+                      type="button"
+                      class="thumbnail"
+                      [class.active]="idx === currentIndex()"
+                      (click)="selectImage(idx)"
+                      [attr.aria-label]="'Ver imagem ' + (idx + 1)"
+                    >
+                      <img [src]="img.src" [alt]="" class="thumbnailImage" />
+                    </button>
+                  }
+                </div>
+              }
+
+              <span class="imageCounter" aria-live="polite">{{ imageCounter() }}</span>
             </div>
           </div>
 
-          <div class="actions">
-            <a
-              [href]="project.repoUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btnPrimary"
-            >
-              <img src="/images/icons/github-black.svg" alt="" class="btnIconImg" />
-              GitHub
-            </a>
-
-            @if (project.demoUrl) {
-              <a
-                [href]="project.demoUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="btnSecondary"
-              >
-                <img src="/images/icons/link.svg" alt="" class="btnIconImg" />
-                Deploy
-              </a>
-            }
-          </div>
-        </div>
-
-        <div class="overviewBody">
-          <article class="infoCard infoCard--about">
-            <h2 class="infoCardTitle">Sobre</h2>
-            <p class="text">{{ project.description }}</p>
-          </article>
-
-          <article class="infoCard infoCard--problem">
-            <h2 class="infoCardTitle infoCardTitle--problem">Problema</h2>
-            <p class="text">{{ project.problem }}</p>
-          </article>
-
-          <article class="infoCard infoCard--solution">
-            <h2 class="infoCardTitle infoCardTitle--solution">Solução</h2>
-            <p class="text">{{ project.solution }}</p>
-          </article>
-
-          <article class="infoCard infoCard--decisions">
-            <h2 class="infoCardTitle">Decisões Técnicas</h2>
-            <ul class="list">
-              @for (decision of project.technicalDecisions; track decision) {
-                <li class="listItem">{{ decision }}</li>
+          <div class="miniGalleryCard">
+            <h2 class="miniGalleryTitle">Todas as imagens</h2>
+            <div class="miniGallery">
+              @for (img of galleryImages(); let idx = $index; track img.src) {
+                <button
+                  type="button"
+                  class="miniGalleryItem"
+                  [class.active]="idx === currentIndex()"
+                  (click)="selectImage(idx); openLightbox(idx)"
+                  [attr.aria-label]="'Ampliar imagem: ' + img.alt"
+                >
+                  <img [src]="img.src" [alt]="img.alt" class="miniGalleryImage" />
+                </button>
               }
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Carrossel -->
-    <section class="carouselSection" aria-label="Galeria de imagens">
-      <div class="carousel">
-        @if (activeImage(); as image) {
-          <img
-            [src]="image.src"
-            [alt]="image.alt"
-            class="carouselImage"
-            (click)="openLightbox(currentIndex())"
-          />
-        }
-
-        @if (hasMultipleImages()) {
-          <button
-            type="button"
-            class="carouselNav carouselNav--prev"
-            aria-label="Imagem anterior"
-            (click)="previousImage()"
-          >
-            <span aria-hidden="true">‹</span>
-          </button>
-
-          <button
-            type="button"
-            class="carouselNav carouselNav--next"
-            aria-label="Próxima imagem"
-            (click)="nextImage()"
-          >
-            <span aria-hidden="true">›</span>
-          </button>
-        }
-      </div>
-
-      <div class="carouselFooter">
-        @if (hasMultipleImages()) {
-          <div class="thumbnails">
-            @for (img of galleryImages(); let idx = $index; track img.src) {
-              <button
-                type="button"
-                class="thumbnail"
-                [class.active]="idx === currentIndex()"
-                (click)="selectImage(idx)"
-                [attr.aria-label]="'Ver imagem ' + (idx + 1)"
-              >
-                <img [src]="img.src" [alt]="" class="thumbnailImage" />
-              </button>
-            }
+            </div>
           </div>
-        }
-
-        <span class="imageCounter" aria-live="polite">{{ imageCounter() }}</span>
-      </div>
-    </section>
-
-    <!-- Galeria -->
-    @if (galleryImages().length > 0) {
-      <section class="section">
-        <h2 class="sectionTitle">Galeria</h2>
-        <div class="gallery">
-          @for (img of galleryImages(); let idx = $index; track img.src) {
-            <button
-              type="button"
-              class="galleryItem"
-              (click)="openLightbox(idx)"
-              [attr.aria-label]="'Ampliar imagem: ' + img.alt"
-            >
-              <img [src]="img.src" [alt]="img.alt" class="galleryImage" />
-              <p class="galleryCaption">{{ img.alt }}</p>
-            </button>
-          }
         </div>
       </section>
     }
 
-    <!-- Backend -->
-    @if (project.backendContext; as backend) {
-      <section class="section section--backend">
-        <h2 class="sectionTitle">Backend</h2>
+    <!-- Tab Informações -->
+    @if (activeTab() === 'info') {
+      <section class="tabPanel infoTab" aria-label="Informações do projeto">
+        <div class="overviewCard">
+          <div class="overviewHeader">
+            <div class="overviewTechs">
+              <span class="overviewTitle">Stack Tecnológica</span>
+              <div class="techsList">
+                @for (tech of project.techs; track tech) {
+                  <app-tech-badge [tech]="tech" />
+                }
+              </div>
+            </div>
 
-        <div class="backendGrid">
-          <div class="backendCard backendCard--context">
-            <h3 class="backendCardTitle">Contexto</h3>
-            <p class="text">{{ backend.context }}</p>
-          </div>
+            <div class="actions">
+              <a
+                [href]="project.repoUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btnPrimary"
+              >
+                <img src="/images/icons/github-black.svg" alt="" class="btnIconImg" />
+                GitHub
+              </a>
 
-          <div class="backendCard backendCard--database">
-            <h3 class="backendCardTitle">Banco de dados</h3>
-            <p class="text">{{ backend.database }}</p>
-          </div>
-        </div>
-
-        <div class="backendDiagram">
-          <h3 class="backendCardTitle">Diagrama da arquitetura</h3>
-          <pre class="diagramCode">{{ backend.diagram }}</pre>
-        </div>
-
-        <div class="backendGrid">
-          <div class="backendCard backendCard--architecture">
-            <h3 class="backendCardTitle">Camadas</h3>
-            <ul class="list">
-              @for (item of backend.architecture; track item) {
-                <li class="listItem">{{ item }}</li>
+              @if (project.demoUrl) {
+                <a
+                  [href]="project.demoUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btnSecondary"
+                >
+                  <img src="/images/icons/link.svg" alt="" class="btnIconImg" />
+                  Deploy
+                </a>
               }
-            </ul>
+            </div>
           </div>
 
-          <div class="backendCard backendCard--endpoints">
-            <h3 class="backendCardTitle">Endpoints principais</h3>
-            <ul class="list">
-              @for (endpoint of backend.endpoints; track endpoint) {
-                <li class="listItem">{{ endpoint }}</li>
-              }
-            </ul>
+          <div class="overviewBody">
+            <article class="infoCard infoCard--about">
+              <h2 class="infoCardTitle">Sobre</h2>
+              <p class="text">{{ project.description }}</p>
+            </article>
+
+            <article class="infoCard infoCard--problem">
+              <h2 class="infoCardTitle infoCardTitle--problem">Problema</h2>
+              <p class="text">{{ project.problem }}</p>
+            </article>
+
+            <article class="infoCard infoCard--solution">
+              <h2 class="infoCardTitle infoCardTitle--solution">Solução</h2>
+              <p class="text">{{ project.solution }}</p>
+            </article>
+
+            <article class="infoCard infoCard--decisions">
+              <h2 class="infoCardTitle">Decisões Técnicas</h2>
+              <ul class="list">
+                @for (decision of project.technicalDecisions; track decision) {
+                  <li class="listItem">{{ decision }}</li>
+                }
+              </ul>
+            </article>
           </div>
         </div>
+
+        @if (project.backendContext; as backend) {
+          <div class="backendCardFull">
+            <h2 class="sectionTitle">Backend</h2>
+
+            <div class="backendGrid">
+              <div class="backendCard backendCard--context">
+                <h3 class="backendCardTitle">Contexto</h3>
+                <p class="text">{{ backend.context }}</p>
+              </div>
+
+              <div class="backendCard backendCard--database">
+                <h3 class="backendCardTitle">Banco de dados</h3>
+                <p class="text">{{ backend.database }}</p>
+              </div>
+            </div>
+
+            <div class="backendDiagram">
+              <h3 class="backendCardTitle">Diagrama da arquitetura</h3>
+              <pre class="diagramCode">{{ backend.diagram }}</pre>
+            </div>
+
+            <div class="backendGrid">
+              <div class="backendCard backendCard--architecture">
+                <h3 class="backendCardTitle">Camadas</h3>
+                <ul class="list">
+                  @for (item of backend.architecture; track item) {
+                    <li class="listItem">{{ item }}</li>
+                  }
+                </ul>
+              </div>
+
+              <div class="backendCard backendCard--endpoints">
+                <h3 class="backendCardTitle">Endpoints principais</h3>
+                <ul class="list">
+                  @for (endpoint of backend.endpoints; track endpoint) {
+                    <li class="listItem">{{ endpoint }}</li>
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+        }
       </section>
     }
   </div>
